@@ -2,30 +2,31 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Chat IA Conversacional</title>
+  <title>Chat IA – Hugging Face</title>
   <style>
-    body { background: #111; color: #0f0; font-family: monospace; text-align:center; padding:40px; }
-    input, button { padding:8px; font-size:1em; margin:8px; }
+    body { font-family: monospace; background: #111; color: #0f0; text-align: center; padding: 40px; }
+    #resposta { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Chat IA – Hugging Face</h1>
-  <input id="mensagem" placeholder="Escreva algo..." size="40"/>
+  <h1>Chat com IA (DialoGPT)</h1>
+  <input id="mensagem" placeholder="Digite algo..." size="50">
   <button onclick="enviar()">Enviar</button>
-  <p id="resposta">...</p>
+  <div id="resposta"></div>
 
   <script>
     const token = "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";
+    let historico_user = [];
+    let historico_bot = [];
 
     async function enviar() {
       const msg = document.getElementById("mensagem").value;
-      const rsp = document.getElementById("resposta");
-      rsp.innerText = "Pensando...";
+      document.getElementById("resposta").innerText = "Pensando...";
 
       const body = {
         inputs: {
-          past_user_inputs: [],
-          generated_responses: [],
+          past_user_inputs: historico_user,
+          generated_responses: historico_bot,
           text: msg
         }
       };
@@ -35,8 +36,8 @@
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
           },
           body: JSON.stringify(body)
         }
@@ -44,12 +45,16 @@
 
       const data = await res.json();
       if (data.error) {
-        rsp.innerText = "Erro: " + data.error;
+        document.getElementById("resposta").innerText = "❌ Erro: " + data.error;
         return;
       }
 
-      const texto = Array.isArray(data) ? data[0].generated_text : data.generated_text;
-      rsp.innerText = texto || "Sem resposta.";
+      let resposta_ia = Array.isArray(data) ? data[0].generated_text : data.generated_text;
+      document.getElementById("resposta").innerText = resposta_ia || "Sem resposta.";
+
+      // Atualiza histórico para próxima conversa
+      historico_user.push(msg);
+      historico_bot.push(resposta_ia);
     }
   </script>
 </body>
