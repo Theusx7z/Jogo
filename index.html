@@ -2,101 +2,97 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Simulador BeamNG-Like</title>
+  <title>Chat IA - Hugging Face</title>
   <style>
-    html, body {
-      margin: 0;
-      overflow: hidden;
-      height: 100%;
-      background: #111;
+    body {
+      background: #0a0a0a;
+      color: #00ff99;
+      font-family: 'Courier New', monospace;
+      padding: 40px;
+      text-align: center;
     }
 
-    canvas {
-      display: block;
+    h1 {
+      color: #00ffff;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #00ffff;
     }
 
-    #hud {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: lime;
-      font-family: monospace;
-      background: rgba(0, 0, 0, 0.4);
+    input, button {
       padding: 10px;
-      border-radius: 8px;
+      font-size: 1em;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input {
+      width: 60%;
+    }
+
+    button {
+      background-color: #00ffff;
+      color: #000;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #00cccc;
+    }
+
+    #resposta {
+      margin-top: 30px;
+      font-size: 1.2em;
+      color: #0f0;
     }
   </style>
 </head>
 <body>
-  <div id="hud">
-    Velocidade: <span id="speed">0</span> km/h<br>
-    Marcha: <span id="gear">N</span>
-  </div>
-  <canvas id="game"></canvas>
+
+  <h1>🤖 Bate-papo com IA</h1>
+
+  <input type="text" id="mensagem" placeholder="Digite sua pergunta...">
+  <button onclick="enviar()">Enviar</button>
+
+  <div id="resposta">Aguardando sua pergunta...</div>
 
   <script>
-    const canvas = document.getElementById("game");
-    const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    async function enviar() {
+      const texto = document.getElementById("mensagem").value;
+      const resposta = document.getElementById("resposta");
 
-    let car = {
-      x: canvas.width / 2,
-      y: canvas.height - 100,
-      width: 50,
-      height: 100,
-      speed: 0,
-      gear: 'N',
-      angle: 0
-    };
-
-    let keys = {};
-
-    document.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
-    document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
-
-    function drawCar() {
-      ctx.save();
-      ctx.translate(car.x, car.y);
-      ctx.rotate(car.angle);
-      ctx.fillStyle = "red";
-      ctx.fillRect(-car.width / 2, -car.height / 2, car.width, car.height);
-      ctx.restore();
-    }
-
-    function update() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // controle
-      if (keys['w']) {
-        car.speed += 0.5;
-        car.gear = 'D';
-      } else if (keys['s']) {
-        car.speed -= 0.5;
-        car.gear = 'R';
-      } else {
-        car.gear = 'N';
+      if (!texto.trim()) {
+        resposta.innerText = "Digite algo para começar.";
+        return;
       }
 
-      if (keys['a']) car.x -= 5;
-      if (keys['d']) car.x += 5;
+      resposta.innerText = "Pensando... 🤖";
 
-      // limites
-      if (car.speed > 120) car.speed = 120;
-      if (car.speed < -30) car.speed = -30;
+      const response = await fetch("https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer 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",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ inputs: texto })
+      });
 
-      car.y -= car.speed * 0.1;
+      const data = await response.json();
 
-      drawCar();
-
-      // HUD
-      document.getElementById("speed").textContent = Math.abs(Math.round(car.speed));
-      document.getElementById("gear").textContent = car.gear;
-
-      requestAnimationFrame(update);
+      try {
+        if (Array.isArray(data) && data[0]?.generated_text) {
+          resposta.innerText = "🤖: " + data[0].generated_text;
+        } else if (data?.generated_text) {
+          resposta.innerText = "🤖: " + data.generated_text;
+        } else {
+          resposta.innerText = "❌ Erro ao gerar resposta.";
+          console.log(data);
+        }
+      } catch (e) {
+        resposta.innerText = "❌ Resposta inválida.";
+      }
     }
-
-    update();
   </script>
+
 </body>
 </html>
