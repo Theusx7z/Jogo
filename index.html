@@ -61,11 +61,19 @@
       margin: 0 auto;
     }
 
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
     input[type="date"],
     input[type="time"],
     button {
       padding: 10px;
-      margin: 10px 0;
+      margin-bottom: 10px;
       font-size: 16px;
       width: 100%;
       border-radius: 6px;
@@ -106,7 +114,11 @@
 
     <div class="agenda">
       <h2>Agende sua pescaria</h2>
+
+      <label for="data">Selecione a data:</label>
       <input type="date" id="data" />
+
+      <label for="hora">Selecione o horário:</label>
       <input type="time" id="hora" step="1800" />
 
       <button onclick="confirmar()">Confirmar Horário</button>
