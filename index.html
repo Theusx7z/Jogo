@@ -37,19 +37,39 @@
     }
 
     .galeria {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(2, 150px);
       gap: 15px;
+      justify-content: center;
       margin-bottom: 40px;
+      width: 100%;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .galeria img {
-      width: 200px;
+      width: 100%;
       height: 150px;
       object-fit: cover;
       border-radius: 10px;
       border: 3px solid #4fc3f7;
+      opacity: 0;
+      position: absolute;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .galeria .img-container {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+    }
+
+    .galeria .img-container img.active {
+      opacity: 1;
+      position: relative;
     }
 
     .agenda {
@@ -105,11 +125,8 @@
       <h1>Caio Miyoshi Pesca Esportiva🎣</h1>
     </header>
 
-    <div class="galeria">
-      <img src="https://i.imgur.com/WrmSY8Z.jpeg" alt="Peixe 1">
-      <img src="https://i.imgur.com/qzSpHbM.jpeg" alt="Peixe 2">
-      <img src="https://i.imgur.com/LFgB6Ek.jpeg" alt="Peixe 3">
-      <img src="https://i.imgur.com/1b9L5Qn.jpeg" alt="Peixe 4">
+    <div class="galeria" id="galeria">
+      <!-- Cada "slot" tem um container com várias imagens que irão alternar -->
     </div>
 
     <div class="agenda">
@@ -157,6 +174,49 @@
       // Opcional: desativar horário selecionado
       document.getElementById("hora").disabled = true;
     }
+
+    // Aqui as URLs das 4 imagens originais, vamos repetir para ter 20:
+    const imagens = [
+      "https://i.imgur.com/WrmSY8Z.jpeg",
+      "https://i.imgur.com/qzSpHbM.jpeg",
+      "https://i.imgur.com/LFgB6Ek.jpeg",
+      "https://i.imgur.com/1b9L5Qn.jpeg"
+    ];
+
+    // Para ter 20 imagens no total, repetimos as 4 até 20
+    const totalSlots = 20;
+    const imagensPorSlot = 1; // 1 imagem por slot para efeito de troca (se quiser que cada slot tenha várias imagens para rodar, pode alterar)
+
+    const galeria = document.getElementById('galeria');
+
+    // Para efeito de alternância em duas fileiras lado a lado, cada "slot" vai mostrar uma imagem que vai mudar a cada 3 segundos.
+
+    // Para simplificar, vou criar 20 containers com uma imagem cada que vai mudar para a próxima imagem a cada 3s, alternando as imagens entre si
+
+    // Cria os containers
+    for(let i=0; i < totalSlots; i++){
+      const div = document.createElement('div');
+      div.className = 'img-container';
+      // Cria 1 img dentro
+      const img = document.createElement('img');
+      img.src = imagens[i % imagens.length];
+      img.classList.add('active');
+      div.appendChild(img);
+      galeria.appendChild(div);
+    }
+
+    // Agora vamos alternar as imagens a cada 3 segundos
+    let index = 0;
+    setInterval(() => {
+      const containers = document.querySelectorAll('.img-container');
+      containers.forEach((container, i) => {
+        const img = container.querySelector('img');
+        // Alterna a imagem do slot
+        let nextIndex = (index + i) % imagens.length;
+        img.src = imagens[nextIndex];
+      });
+      index = (index + 1) % imagens.length;
+    }, 3000);
   </script>
 </body>
 </html>
