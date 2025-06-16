@@ -61,7 +61,7 @@
       margin: 0 auto;
     }
 
-    select, button {
+    input[type="date"], select, button {
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
@@ -100,17 +100,11 @@
       <img src="https://i.imgur.com/qzSpHbM.jpeg" alt="Peixe 2">
       <img src="https://i.imgur.com/LFgB6Ek.jpeg" alt="Peixe 3">
       <img src="https://i.imgur.com/1b9L5Qn.jpeg" alt="Peixe 4">
-      <!-- Adicione mais imagens -->
     </div>
 
     <div class="agenda">
       <h2>Agende sua pescaria</h2>
-      <select id="data">
-        <option value="">Selecione o dia</option>
-        <option value="2025-06-20">20/06/2025</option>
-        <option value="2025-06-21">21/06/2025</option>
-        <option value="2025-06-22">22/06/2025</option>
-      </select>
+      <input type="date" id="data" />
 
       <select id="hora">
         <option value="">Selecione o horário</option>
