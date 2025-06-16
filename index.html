@@ -162,19 +162,42 @@
   </div>
 
   <script>
-    const usados = [];
-    const bloqueioTempoMs = 3 * 60 * 60 * 1000; // 3 horas
+    // Tempo de bloqueio em ms (3 horas)
+    const bloqueioTempoMs = 3 * 60 * 60 * 1000;
+    // Intervalo mínimo entre agendamentos em minutos (exemplo: 60min = 1h)
+    const intervaloMinutos = 60;
+
+    // Função para salvar no localStorage
+    function salvarUsados() {
+      localStorage.setItem('usados', JSON.stringify(usados));
+    }
+
+    // Função para carregar do localStorage
+    function carregarUsados() {
+      const dados = localStorage.getItem('usados');
+      if (dados) {
+        try {
+          return JSON.parse(dados);
+        } catch {
+          return [];
+        }
+      }
+      return [];
+    }
+
+    let usados = carregarUsados();
 
     function criarDataCompleta(dataStr, horaStr) {
       return new Date(`${dataStr}T${horaStr}:00`);
     }
 
-    function horariosConflitam(h1, h2, intervaloMinutos = 30) {
+    function horariosConflitam(h1, h2, intervaloMinutos) {
       const diffMs = Math.abs(h1 - h2);
       const diffMin = diffMs / (1000 * 60);
       return diffMin < intervaloMinutos;
     }
 
+    // Limpa horários expirados e salva no localStorage
     function limparHorariosAntigos() {
       const agora = Date.now();
       let liberadoAlgum = false;
@@ -184,15 +207,16 @@
           liberadoAlgum = true;
         }
       }
+      if (liberadoAlgum) salvarUsados();
       return liberadoAlgum;
     }
 
     function confirmar() {
-      // Limpa e verifica se liberou algum horário
+      const msgElem = document.getElementById('mensagem');
+
+      // Limpa agendamentos expirados
       const liberou = limparHorariosAntigos();
 
-      // Atualiza mensagem se liberou
-      const msgElem = document.getElementById('mensagem');
       if (liberou) {
         msgElem.textContent = "Alguns horários foram liberados e já estão vagos!";
       } else {
@@ -212,13 +236,15 @@
       for (const agendamento of usados) {
         const [d, h] = agendamento.horarioStr.split(' ');
         const horarioExistente = criarDataCompleta(d, h);
-        if (horariosConflitam(novoHorario, horarioExistente)) {
+
+        if (horariosConflitam(novoHorario, horarioExistente, intervaloMinutos)) {
           alert("Este horário ou um horário muito próximo já foi agendado!");
           return;
         }
       }
 
       usados.push({ horarioStr: `${data} ${hora}`, timestamp: Date.now() });
+      salvarUsados();
 
       const mensagem = `Olá, gostaria de agendar uma pescaria para o dia ${data} às ${hora}.`;
       const numero = "5541987724730";
@@ -229,6 +255,7 @@
       document.getElementById("hora").disabled = true;
     }
 
+    // Galeria de imagens (20 fotos iguais)
     const imagens = new Array(20).fill("IMG_5056.jpeg");
 
     const totalSlots = 20;
@@ -254,6 +281,7 @@
       });
       index = (index + 1) % imagens.length;
     }, 3000);
+
   </script>
 </body>
 </html>
