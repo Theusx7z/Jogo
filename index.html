@@ -36,7 +36,6 @@
       text-shadow: 0 0 10px #000;
     }
 
-    /* Galeria em grid 2 colunas */
     .galeria {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -63,11 +62,21 @@
       opacity: 0;
       position: absolute;
       transition: opacity 1s ease-in-out;
+      animation: zoomLeve 6s ease-in-out infinite;
     }
 
     .galeria img.active {
       opacity: 1;
       position: relative;
+    }
+
+    @keyframes zoomLeve {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
     }
 
     .agenda {
@@ -169,38 +178,15 @@
 
       window.open(url, "_blank");
 
-      // Opcional: desativar horário selecionado
       document.getElementById("hora").disabled = true;
     }
 
-    // Aqui você troca os links pelas URLs das suas 20 fotos:
-    const imagens = [
-      "https://i.imgur.com/WrmSY8Z.jpeg",
-      "https://i.imgur.com/qzSpHbM.jpeg",
-      "https://i.imgur.com/LFgB6Ek.jpeg",
-      "https://i.imgur.com/1b9L5Qn.jpeg",
-      "https://i.imgur.com/WrmSY8Z.jpeg",
-      "https://i.imgur.com/qzSpHbM.jpeg",
-      "https://i.imgur.com/LFgB6Ek.jpeg",
-      "https://i.imgur.com/1b9L5Qn.jpeg",
-      "https://i.imgur.com/WrmSY8Z.jpeg",
-      "https://i.imgur.com/qzSpHbM.jpeg",
-      "https://i.imgur.com/LFgB6Ek.jpeg",
-      "https://i.imgur.com/1b9L5Qn.jpeg",
-      "https://i.imgur.com/WrmSY8Z.jpeg",
-      "https://i.imgur.com/qzSpHbM.jpeg",
-      "https://i.imgur.com/LFgB6Ek.jpeg",
-      "https://i.imgur.com/1b9L5Qn.jpeg",
-      "https://i.imgur.com/WrmSY8Z.jpeg",
-      "https://i.imgur.com/qzSpHbM.jpeg",
-      "https://i.imgur.com/LFgB6Ek.jpeg",
-      "https://i.imgur.com/1b9L5Qn.jpeg"
-    ];
+    // Usando a mesma imagem 20x
+    const imagens = new Array(20).fill("IMG_5056.jpeg");
 
     const totalSlots = 20;
     const galeria = document.getElementById('galeria');
 
-    // Cria 20 containers com uma img cada
     for(let i = 0; i < totalSlots; i++){
       const div = document.createElement('div');
       div.className = 'img-container';
