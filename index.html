@@ -61,7 +61,9 @@
       margin: 0 auto;
     }
 
-    input[type="date"], select, button {
+    input[type="date"],
+    input[type="time"],
+    button {
       padding: 10px;
       margin: 10px 0;
       font-size: 16px;
@@ -105,13 +107,7 @@
     <div class="agenda">
       <h2>Agende sua pescaria</h2>
       <input type="date" id="data" />
-
-      <select id="hora">
-        <option value="">Selecione o horário</option>
-        <option value="07:00">07:00</option>
-        <option value="10:00">10:00</option>
-        <option value="14:00">14:00</option>
-      </select>
+      <input type="time" id="hora" step="1800" />
 
       <button onclick="confirmar()">Confirmar Horário</button>
     </div>
@@ -141,13 +137,13 @@
       usados.push(horario);
 
       const mensagem = `Olá, gostaria de agendar uma pescaria para o dia ${data} às ${hora}.`;
-      const numero = "+5541987724730"; // Ex: 5599999999999
+      const numero = "5541987724730";
       const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
 
       window.open(url, "_blank");
 
-      const horaSelect = document.getElementById("hora");
-      horaSelect.querySelector(`option[value="${hora}"]`).disabled = true;
+      // Opcional: desativar horário selecionado
+      document.getElementById("hora").disabled = true;
     }
   </script>
 </body>
