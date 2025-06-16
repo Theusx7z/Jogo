@@ -57,7 +57,7 @@
       width: 100%;
       height: 150px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 15px;
       border: 3px solid #4fc3f7;
       opacity: 0;
       position: absolute;
@@ -118,6 +118,14 @@
       background-color: #29b6f6;
     }
 
+    .mensagem {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #00ff00;
+      min-height: 24px;
+    }
+
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -146,6 +154,8 @@
       <input type="time" id="hora" step="1800" />
 
       <button onclick="confirmar()">Confirmar Horário</button>
+
+      <p id="mensagem" class="mensagem"></p>
     </div>
 
     <div class="footer">© 2025 Caio Miyoshi Pesca Esportiva🎣</div>
@@ -153,8 +163,42 @@
 
   <script>
     const usados = [];
+    const bloqueioTempoMs = 3 * 60 * 60 * 1000; // 3 horas
+
+    function criarDataCompleta(dataStr, horaStr) {
+      return new Date(`${dataStr}T${horaStr}:00`);
+    }
+
+    function horariosConflitam(h1, h2, intervaloMinutos = 30) {
+      const diffMs = Math.abs(h1 - h2);
+      const diffMin = diffMs / (1000 * 60);
+      return diffMin < intervaloMinutos;
+    }
+
+    function limparHorariosAntigos() {
+      const agora = Date.now();
+      let liberadoAlgum = false;
+      for (let i = usados.length - 1; i >= 0; i--) {
+        if (agora - usados[i].timestamp > bloqueioTempoMs) {
+          usados.splice(i, 1);
+          liberadoAlgum = true;
+        }
+      }
+      return liberadoAlgum;
+    }
 
     function confirmar() {
+      // Limpa e verifica se liberou algum horário
+      const liberou = limparHorariosAntigos();
+
+      // Atualiza mensagem se liberou
+      const msgElem = document.getElementById('mensagem');
+      if (liberou) {
+        msgElem.textContent = "Alguns horários foram liberados e já estão vagos!";
+      } else {
+        msgElem.textContent = "";
+      }
+
       const data = document.getElementById('data').value;
       const hora = document.getElementById('hora').value;
 
@@ -163,14 +207,18 @@
         return;
       }
 
-      const horario = `${data} às ${hora}`;
+      const novoHorario = criarDataCompleta(data, hora);
 
-      if (usados.includes(horario)) {
-        alert("Este horário já foi agendado!");
-        return;
+      for (const agendamento of usados) {
+        const [d, h] = agendamento.horarioStr.split(' ');
+        const horarioExistente = criarDataCompleta(d, h);
+        if (horariosConflitam(novoHorario, horarioExistente)) {
+          alert("Este horário ou um horário muito próximo já foi agendado!");
+          return;
+        }
       }
 
-      usados.push(horario);
+      usados.push({ horarioStr: `${data} ${hora}`, timestamp: Date.now() });
 
       const mensagem = `Olá, gostaria de agendar uma pescaria para o dia ${data} às ${hora}.`;
       const numero = "5541987724730";
@@ -181,7 +229,6 @@
       document.getElementById("hora").disabled = true;
     }
 
-    // Usando a mesma imagem 20x
     const imagens = new Array(20).fill("IMG_5056.jpeg");
 
     const totalSlots = 20;
