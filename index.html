@@ -36,17 +36,22 @@
       text-shadow: 0 0 10px #000;
     }
 
+    /* Galeria em grid 2 colunas */
     .galeria {
       display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      grid-template-rows: repeat(2, 150px);
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 150px;
       gap: 15px;
       justify-content: center;
-      margin-bottom: 40px;
+      max-width: 450px;
+      margin: 0 auto 40px auto;
+    }
+
+    .galeria .img-container {
+      position: relative;
       width: 100%;
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
+      height: 150px;
+      overflow: hidden;
     }
 
     .galeria img {
@@ -60,14 +65,7 @@
       transition: opacity 1s ease-in-out;
     }
 
-    .galeria .img-container {
-      position: relative;
-      width: 100%;
-      height: 150px;
-      overflow: hidden;
-    }
-
-    .galeria .img-container img.active {
+    .galeria img.active {
       opacity: 1;
       position: relative;
     }
@@ -126,7 +124,7 @@
     </header>
 
     <div class="galeria" id="galeria">
-      <!-- Cada "slot" tem um container com várias imagens que irão alternar -->
+      <!-- Imagens criadas pelo JS -->
     </div>
 
     <div class="agenda">
@@ -175,43 +173,49 @@
       document.getElementById("hora").disabled = true;
     }
 
-    // Aqui as URLs das 4 imagens originais, vamos repetir para ter 20:
+    // Aqui você troca os links pelas URLs das suas 20 fotos:
     const imagens = [
+      "https://i.imgur.com/WrmSY8Z.jpeg",
+      "https://i.imgur.com/qzSpHbM.jpeg",
+      "https://i.imgur.com/LFgB6Ek.jpeg",
+      "https://i.imgur.com/1b9L5Qn.jpeg",
+      "https://i.imgur.com/WrmSY8Z.jpeg",
+      "https://i.imgur.com/qzSpHbM.jpeg",
+      "https://i.imgur.com/LFgB6Ek.jpeg",
+      "https://i.imgur.com/1b9L5Qn.jpeg",
+      "https://i.imgur.com/WrmSY8Z.jpeg",
+      "https://i.imgur.com/qzSpHbM.jpeg",
+      "https://i.imgur.com/LFgB6Ek.jpeg",
+      "https://i.imgur.com/1b9L5Qn.jpeg",
+      "https://i.imgur.com/WrmSY8Z.jpeg",
+      "https://i.imgur.com/qzSpHbM.jpeg",
+      "https://i.imgur.com/LFgB6Ek.jpeg",
+      "https://i.imgur.com/1b9L5Qn.jpeg",
       "https://i.imgur.com/WrmSY8Z.jpeg",
       "https://i.imgur.com/qzSpHbM.jpeg",
       "https://i.imgur.com/LFgB6Ek.jpeg",
       "https://i.imgur.com/1b9L5Qn.jpeg"
     ];
 
-    // Para ter 20 imagens no total, repetimos as 4 até 20
     const totalSlots = 20;
-    const imagensPorSlot = 1; // 1 imagem por slot para efeito de troca (se quiser que cada slot tenha várias imagens para rodar, pode alterar)
-
     const galeria = document.getElementById('galeria');
 
-    // Para efeito de alternância em duas fileiras lado a lado, cada "slot" vai mostrar uma imagem que vai mudar a cada 3 segundos.
-
-    // Para simplificar, vou criar 20 containers com uma imagem cada que vai mudar para a próxima imagem a cada 3s, alternando as imagens entre si
-
-    // Cria os containers
-    for(let i=0; i < totalSlots; i++){
+    // Cria 20 containers com uma img cada
+    for(let i = 0; i < totalSlots; i++){
       const div = document.createElement('div');
       div.className = 'img-container';
-      // Cria 1 img dentro
       const img = document.createElement('img');
-      img.src = imagens[i % imagens.length];
+      img.src = imagens[i];
       img.classList.add('active');
       div.appendChild(img);
       galeria.appendChild(div);
     }
 
-    // Agora vamos alternar as imagens a cada 3 segundos
     let index = 0;
     setInterval(() => {
       const containers = document.querySelectorAll('.img-container');
       containers.forEach((container, i) => {
         const img = container.querySelector('img');
-        // Alterna a imagem do slot
         let nextIndex = (index + i) % imagens.length;
         img.src = imagens[nextIndex];
       });
